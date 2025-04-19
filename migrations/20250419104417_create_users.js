@@ -10,6 +10,7 @@ exports.up = function (knex) {
       table.string('google_id').unique();
       table.string('facebook_id').unique();
       table.string('apple_id').unique();
+      table.string('provider');  // Nowa kolumna, która określa sposób logowania
       table.boolean('pin_enabled').defaultTo(false);
       table.string('pin_hash');
       table.timestamp('created_at').defaultTo(knex.fn.now());
@@ -20,3 +21,4 @@ exports.up = function (knex) {
   exports.down = function (knex) {
     return knex.schema.dropTable('users');
   };
+  
