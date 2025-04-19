@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+
+# Env files (hasła, klucze API itd.)
+.env
+
+# Logi
+logs/
+*.log
+npm-debug.log*
+
+# Bazy danych lokalne (jeśli byś coś trzymał lokalnie)
+*.sqlite
+*.db
+
+# Knex migrowane pliki tymczasowe (opcjonalnie)
+.knex/
+
+# OS / IDE pliki
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build / output
+dist/
+build/
+
+# Testy / coverage
+coverage/
