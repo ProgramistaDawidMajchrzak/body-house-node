@@ -29,30 +29,30 @@ module.exports = function (passport) {
     )
   );
 
-  passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: '/api/auth/google/callback',
-  },
-  async (accessToken, refreshToken, profile, done) => {
-    try {
-      let user = await knex('users').where({ google_id: profile.id }).first();
-      if (!user) {
-        const [newUser] = await knex('users')
-          .insert({
-            email: profile.emails[0].value,
-            google_id: profile.id,
-            provider: 'google',
-          })
-          .returning('*');
-        return done(null, newUser);
-      }
-      return done(null, user);
-    } catch (err) {
-      return done(err, null);
-    }
-  }
-));
+//   passport.use(new GoogleStrategy({
+//     clientID: process.env.GOOGLE_CLIENT_ID,
+//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//     callbackURL: '/api/auth/google/callback',
+//   },
+//   async (accessToken, refreshToken, profile, done) => {
+//     try {
+//       let user = await knex('users').where({ google_id: profile.id }).first();
+//       if (!user) {
+//         const [newUser] = await knex('users')
+//           .insert({
+//             email: profile.emails[0].value,
+//             google_id: profile.id,
+//             provider: 'google',
+//           })
+//           .returning('*');
+//         return done(null, newUser);
+//       }
+//       return done(null, user);
+//     } catch (err) {
+//       return done(err, null);
+//     }
+//   }
+// ));
 
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_CLIENT_ID,
