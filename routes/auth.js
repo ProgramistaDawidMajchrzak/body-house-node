@@ -11,4 +11,6 @@ router.post('/login', passport.authenticate('local', {
 
 router.post('/facebook', authController.facebookLogin);
 
+router.post('/google', authController.googleLogin);
+
 module.exports = router;

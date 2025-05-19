@@ -81,6 +81,65 @@ exports.register = async (req, res) => {
     }
   };
 
+  const { OAuth2Client } = require('google-auth-library');
+  const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+  // POST /api/auth/google
+exports.googleLogin = async (req, res) => {
+  const { idToken } = req.body;
+
+  if (!idToken) {
+    return res.status(400).json({ message: 'Brakuje idTokena z Google' });
+  }
+
+  try {
+    // Weryfikacja tokena z Google
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { sub: google_id, email } = payload;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Brakuje adresu email z Google' });
+    }
+
+    // Szukamy użytkownika
+    let user = await knex('users').where({ google_id }).first();
+
+    // Jeśli nie istnieje — tworzymy
+    if (!user) {
+      const inserted = await knex('users')
+        .insert({
+          email,
+          google_id,
+          provider: 'google',
+        })
+        .returning('*');
+
+      user = inserted[0];
+    }
+
+    // Tworzymy JWT
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({ token, user });
+  } catch (err) {
+    console.error('Błąd logowania przez Google:', err);
+    res.status(500).json({
+      message: 'Błąd logowania przez Google',
+      error: err.message,
+    });
+  }
+};
+
+
 // Funkcja logowania
 exports.loginSuccess = (req, res) => {
   const user = req.user;
